@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>踩踩Go语言range坑 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;go只提供了一种循环方式，即for循环，在使用时可以像c那样使用，也可以通过for range方式遍历容器类型如数组、切片和映射。但是在使用for range时，如果使用不当，就会出现一些问题，导致程序运行行为不如预期。比如，下面的示例程序将遍历一个切片，并将切片的值当成映射的键和值存入，切片类型是一个int型，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="踩踩Go语言range坑">
+<meta property="og:url" content="http://yoursite.com/2019/09/08/go_range/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;go只提供了一种循环方式，即for循环，在使用时可以像c那样使用，也可以通过for range方式遍历容器类型如数组、切片和映射。但是在使用for range时，如果使用不当，就会出现一些问题，导致程序运行行为不如预期。比如，下面的示例程序将遍历一个切片，并将切片的值当成映射的键和值存入，切片类型是一个int型，">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567885376939&di=4450af791597b6290d48a583703ed434&imgtype=0&src=http%3A%2F%2Fpic.rmb.bdstatic.com%2F0116f0d68fa5879056bc101e91639d6c.png">
+<meta property="og:updated_time" content="2019-09-07T17:05:00.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="踩踩Go语言range坑">
+<meta name="twitter:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;go只提供了一种循环方式，即for循环，在使用时可以像c那样使用，也可以通过for range方式遍历容器类型如数组、切片和映射。但是在使用for range时，如果使用不当，就会出现一些问题，导致程序运行行为不如预期。比如，下面的示例程序将遍历一个切片，并将切片的值当成映射的键和值存入，切片类型是一个int型，">
+<meta name="twitter:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567885376939&di=4450af791597b6290d48a583703ed434&imgtype=0&src=http%3A%2F%2Fpic.rmb.bdstatic.com%2F0116f0d68fa5879056bc101e91639d6c.png">
+  
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+</html>
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">Flipped</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            · <a href="https://blog.csdn.net/zlb_lover" target="_blank" class="nav-icn">CSDN</a>
+          
+        
+          
+            · <a href="https://github.com/zlbonly" target="_blank" class="nav-icn">GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">HOME</a>
+          
+        
+            <a href="/archives" class="nav-menu ">ARCHIVE</a>
+          
+        
+            <a href="/about" class="nav-menu ">ABOUT</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">踩踩Go语言range坑</h2>
+  <p class="sub">Sep 8, 2019</p>
+  <article class="content">
+    <p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;go只提供了一种循环方式，即for循环，在使用时可以像c那样使用，也可以通过for range方式遍历容器类型如数组、切片和映射。但是在使用for range时，如果使用不当，就会出现一些问题，导致程序运行行为不如预期。比如，下面的示例程序将遍历一个切片，并将切片的值当成映射的键和值存入，切片类型是一个int型，映射的类型是键为int型，值为*int，即值是一个地址。 </p>
+<p> 下面我们就来看下一段代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()  &#123;</span><br><span class="line"></span><br><span class="line">	t_slice := [] int &#123;0,1,2,3&#125;</span><br><span class="line">	t_map := make(map[int] *int)</span><br><span class="line"></span><br><span class="line">	for key,value := range t_slice&#123;</span><br><span class="line">		t_map[key] = &amp;value</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;循环打印 t_map 对应值&quot;)</span><br><span class="line">	prtMap(t_map)</span><br><span class="line">&#125;</span><br><span class="line">func prtMap(myMap map[int]*int)  &#123;</span><br><span class="line">	for key,value := range myMap&#123;</span><br><span class="line">		fmt.Printf(&quot;map[%v] = %v\n&quot;,key,*value)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line">我们期望输出结果：</span><br><span class="line">```$xslt</span><br><span class="line">循环打印 t_map 键值</span><br><span class="line">map[2] = 2</span><br><span class="line">map[3] = 3</span><br><span class="line">map[0] = 0</span><br><span class="line">map[1] = 1</span><br></pre></td></tr></table></figure>
+
+<p>然而实际输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">循环打印 t_map 键值</span><br><span class="line">map[2] = 3</span><br><span class="line">map[3] = 3</span><br><span class="line">map[0] = 3</span><br><span class="line">map[1] = 3</span><br></pre></td></tr></table></figure>
+
+<p>结果问题分析：</p>
+<p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> 但是由输出可以知道，映射的值都相同且都是3。其实可以猜测映射的值都是同一个地址，遍历到切片的最后一个元素3时，将3写入了该地址，所以导致映射所有值都相同。其实真实原因也是如此，因为for range创建了每个元素的副本，而不是直接返回每个元素的引用，如果使用该值变量的地址作为指向每个元素的指针，就会导致错误，在迭代时，返回的变量是一个迭代过程中根据切片依次赋值的新变量，所以值的地址总是相同的，导致结果不如预期。</p>
+<p> 从上面结果我们可以猜想到，range指向的都是同一个指针。通过Println我们可以验证下我们的猜想：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"> import (</span><br><span class="line"> 	&quot;fmt&quot;</span><br><span class="line"> )</span><br><span class="line"> </span><br><span class="line"> func main()  &#123;</span><br><span class="line"> </span><br><span class="line"> 	t_slice := [] int &#123;0,1,2,3&#125;</span><br><span class="line"> 	t_map := make(map[int] *int)</span><br><span class="line"> </span><br><span class="line"> 	for key,value := range t_slice&#123;</span><br><span class="line"> 		t_map[key] = &amp;value</span><br><span class="line"> 	&#125;</span><br><span class="line"> 	</span><br><span class="line"> 	fmt.Println(&quot;循环打印 t_map 对应值&quot;)</span><br><span class="line"> 	fmt.Println(t_map)</span><br><span class="line"> 	//prtMap(t_map)</span><br><span class="line"> &#125;</span><br><span class="line"> func prtMap(myMap map[int]*int)  &#123;</span><br><span class="line"> 	for key,value := range myMap&#123;</span><br><span class="line"> 		fmt.Printf(&quot;map[%v] = %v\n&quot;,key,*value)</span><br><span class="line"> 	&#125;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> 输出结果：</span><br><span class="line"> map[0:0xc000014078 1:0xc000014078 2:0xc000014078 3:0xc000014078]</span><br><span class="line"> ``` </span><br><span class="line"> </span><br><span class="line"> 我们可以看到我们的猜想是正确的。</span><br><span class="line"> </span><br><span class="line">#### 解决方案</span><br><span class="line"> 修改方式也很简单，我们只需要声明一个中间变量，保存value,并且复制给map即可</span><br><span class="line">```$xslt</span><br><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()  &#123;</span><br><span class="line"></span><br><span class="line">	t_slice := [] int &#123;0,1,2,3&#125;</span><br><span class="line">	t_map := make(map[int] *int)</span><br><span class="line"></span><br><span class="line">	for key,value := range t_slice&#123;</span><br><span class="line">		n := value</span><br><span class="line">		t_map[key] = &amp;n</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(&quot;直接打印 t_mp&quot;)</span><br><span class="line">	fmt.Println(t_map)</span><br><span class="line">	fmt.Println(&quot;循环打印 t_map 键值&quot;)</span><br><span class="line">	prtMap(t_map)</span><br><span class="line">&#125;</span><br><span class="line">func prtMap(myMap map[int]*int)  &#123;</span><br><span class="line">	for key,value := range myMap&#123;</span><br><span class="line">		fmt.Printf(&quot;map[%v] = %v\n&quot;,key,*value)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">直接打印 t_mp</span><br><span class="line">map[0:0xc000014078 1:0xc000014080 2:0xc000014088 3:0xc000014090]</span><br><span class="line">循环打印 t_map 键值</span><br><span class="line">map[0] = 0</span><br><span class="line">map[1] = 1</span><br><span class="line">map[2] = 2</span><br><span class="line">map[3] = 3</span><br></pre></td></tr></table></figure>
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2019/09/06/test/" class="link f-fr">使用Hexo 和 GitHub 搭建博客⟶</a>
+    
+  </footer>
+</section></div>
+    <footer id="footer" class="f-cf">
+  友链
+  
+    
+      
+        · <a href="https://dribbble.com/clovertuan" target="_blank" class="nav-icn">Wu</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @Flipped</span>
+</footer>
+  </div>
+</body>
+</html>
