@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>动态规划 —— Fibonacci | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1、爬楼梯 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;题目描述：有 N 阶楼梯，每次可以上一阶或者两阶，求有多少种上楼梯的方法。&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;思路分析:  定义一个数组 dp 存储上楼梯的方法数（为了方便讨论，数组下标从 1 开始），dp[i] 表示走到第 i 个楼梯的方法数目。第 i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动态规划 —— Fibonacci">
+<meta property="og:url" content="http://yoursite.com/2019/09/18/fibonacci/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1、爬楼梯 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;题目描述：有 N 阶楼梯，每次可以上一阶或者两阶，求有多少种上楼梯的方法。&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;思路分析:  定义一个数组 dp 存储上楼梯的方法数（为了方便讨论，数组下标从 1 开始），dp[i] 表示走到第 i 个楼梯的方法数目。第 i">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268/sign=df64d70cfbedab6474724ac6cf37af81/a08b87d6277f9e2f7c63b4cf1f30e924b999f3a7.jpg">
+<meta property="og:updated_time" content="2019-09-18T11:13:49.457Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="动态规划 —— Fibonacci">
+<meta name="twitter:description" content="1、爬楼梯 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;题目描述：有 N 阶楼梯，每次可以上一阶或者两阶，求有多少种上楼梯的方法。&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;思路分析:  定义一个数组 dp 存储上楼梯的方法数（为了方便讨论，数组下标从 1 开始），dp[i] 表示走到第 i 个楼梯的方法数目。第 i">
+<meta name="twitter:image" content="https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268/sign=df64d70cfbedab6474724ac6cf37af81/a08b87d6277f9e2f7c63b4cf1f30e924b999f3a7.jpg">
+  
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+</html>
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">Flipped</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            · <a href="https://blog.csdn.net/zlb_lover" target="_blank" class="nav-icn">CSDN</a>
+          
+        
+          
+            · <a href="https://github.com/zlbonly" target="_blank" class="nav-icn">GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">HOME</a>
+          
+        
+            <a href="/archives" class="nav-menu ">ARCHIVE</a>
+          
+        
+            <a href="/about" class="nav-menu ">ABOUT</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">动态规划 —— Fibonacci</h2>
+  <p class="sub">Sep 18, 2019</p>
+  <article class="content">
+    <h4 id="1、爬楼梯"><a href="#1、爬楼梯" class="headerlink" title="1、爬楼梯"></a>1、爬楼梯</h4><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目描述：有 N 阶楼梯，每次可以上一阶或者两阶，求有多少种上楼梯的方法。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="red">思路分析: </font> 定义一个数组 dp 存储上楼梯的方法数（为了方便讨论，数组下标从 1 开始），dp[i] 表示走到第 i 个楼梯的方法数目。第 i 个楼梯可以从第 i-1 和 i-2 个楼梯再走一步到达，走到第 i 个楼梯的方法数为走到第 i-1 和第 i-2 个楼梯的方法数之和。<br>即 dp[i] = d[i-1] + dp[i-2]。<br>上述问题是一个典型的Fibonacci问题，因此可以使用递归实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function test($n = 10) &#123;</span><br><span class="line">   if ($n &lt;= 2) &#123;</span><br><span class="line">       return $n;</span><br><span class="line">   &#125;</span><br><span class="line">  return test($n-1)+ test($n-2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是 分析发现，使用递归方法，改算法的空间复杂度为O(n),考虑到 dp[i] 只与 dp[i - 1] 和 dp[i - 2] 有关，因此可以只用两个变量来存储 dp[i - 1] 和 dp[i - 2]，使得原来的 O(N) 空间复杂度优化为 O(1) 复杂度。<br>实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function test($n = 10) &#123;</span><br><span class="line">     if ($n &lt;= 2) &#123;</span><br><span class="line">       return $n;</span><br><span class="line">   &#125;</span><br><span class="line">   $pre1 = 1;</span><br><span class="line">   $pre2 = 2;</span><br><span class="line">   for($i = 2; $i&lt; $n ;$i++) &#123;</span><br><span class="line">         $now = $pre1 + $pre2;</span><br><span class="line">        $pre1 = $pre2;</span><br><span class="line">        $pre2 = $now;</span><br><span class="line">   &#125;</span><br><span class="line">   return $now;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、强盗抢劫"><a href="#2、强盗抢劫" class="headerlink" title="2、强盗抢劫"></a>2、强盗抢劫</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目描述: 强盗抢劫一排住户，但是不能抢邻近的住户，求最大抢劫量。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="red">思路分析: </font>  定义 dp 数组用来存储最大的抢劫量，其中 dp[i] 表示抢到第 i 个住户时的最大抢劫量。由于不能抢劫邻近住户，如果抢劫了第 i -1 个住户，那么就不能再抢劫第 i 个住户，所以<br> d[i] = max(d[i-1],d[i-2]+num[i]);<br>实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function test($nums)&#123;</span><br><span class="line">    $pre1 = 0;</span><br><span class="line">    $pre2 = 0;</span><br><span class="line">    for($i = 0; $i &lt; count($nums); $i++) &#123;</span><br><span class="line">        $now = max($pre2 + $nums[$i],$pre1);</span><br><span class="line">        $pre2 = $pre1;</span><br><span class="line">        $pre1 = $now;</span><br><span class="line">    &#125;</span><br><span class="line">    return $now;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3、强盗在环形街区抢劫"><a href="#3、强盗在环形街区抢劫" class="headerlink" title="3、强盗在环形街区抢劫"></a>3、强盗在环形街区抢劫</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目描述: 强盗在一个环形街区进行抢劫，但是不能抢邻近的住户，求最大抢劫量。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="red">思路分析: </font>  由于是环形房屋，那么意味着第一间房屋和最后一间房屋是紧挨的。我们可以将环形数组拆成从0到numsSize-2,和1到numsSzie-1两部分，然后分别计算两部分的最大抢劫数，最后取两者中的较大值作为结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$num = array(1,2,3,4,5,6,7,8,9,10);</span><br><span class="line"></span><br><span class="line">function rob($num ,$first,$last)&#123;</span><br><span class="line">    $pre1 = 0;</span><br><span class="line">    $pre2 = 0;</span><br><span class="line">    for ($i = $first;$i&lt;=$last;$i++) &#123;</span><br><span class="line">        $now = max($pre2+$num[$i],$pre1);</span><br><span class="line">        $pre2 = $pre1;</span><br><span class="line">        $pre1 = $now;</span><br><span class="line">    &#125;</span><br><span class="line">    return $now;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function test($num) &#123;</span><br><span class="line">    if(empty($num)) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    if (1 == count($num)) &#123;</span><br><span class="line">        return nums[0];</span><br><span class="line">    &#125;</span><br><span class="line">    return max(rob($num,0,count($num)-2),rob($num,1,count($num)-1));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4、母牛成产"><a href="#4、母牛成产" class="headerlink" title="4、母牛成产"></a>4、母牛成产</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目描述: 假设农场中成熟的母牛每年都会生 1 头小母牛，并且永远不会死。第一年有 1 只小母牛，从第二年开始，母牛开始生小母牛。每只小母牛 3 年之后成熟又可以生小母牛。给定整数 N，求 N 年后牛的数量。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="red">思路分析: </font>  第 N-3 年的所有牛，到第 N 年肯定都是成熟的牛，期间出生的牛肯定都没有成熟。所以<br>第 i 年成熟的牛的数量为：<br>dp[i] = dp[i-3]+ dp[i-1];<br>实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">function test($N = 10) &#123;</span><br><span class="line">    if($N &lt; 0 ) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    if($N ==1 || $N==2 || $N==3) &#123;</span><br><span class="line">        return $N;</span><br><span class="line">    &#125;</span><br><span class="line">    $pre1 = 1 ;</span><br><span class="line">    $pre2 = 2;</span><br><span class="line">    $pre3 = 3;</span><br><span class="line">    </span><br><span class="line">    for($i = 4; $i&lt;= $N ; $i++) &#123;</span><br><span class="line">        $now = $pre1 + $pre3;</span><br><span class="line">        $pre1 = $pre2;</span><br><span class="line">        $pre2 = $pre3;</span><br><span class="line">        $pre3 = $now;</span><br><span class="line">    &#125;</span><br><span class="line">    return $now;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="信件错排"><a href="#信件错排" class="headerlink" title="信件错排"></a>信件错排</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目描述: 有 N 个 信 和 信封，它们被打乱，求错误装信方式的数量。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="red">问题说明: </font> 有n个正整数1，2，3，……n，将这n个正整数重新排列，使其中的每一个数都不在原来的位置上，这种排列称为正整数1，2，3，……n的错排<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="red">思路分析: 由题意a1=0，a2=1，当n≥3时，在错排中n必不在第n位，设n放在第k位上（1≤k≤n-1），则第n位上有两种可能：</font></p>
+<ul>
+<li><p>如果第n位上不是k，那么把第n位看作第k位，将n以外的n－1个数进行错排，错排个数是an-1；</p>
+</li>
+<li><p>如果第n位上是k，那么除n和k以外的n－2个数的错排是an-2，<br>所以n在第k位上的错排数共有an-1＋an-2，由于k可取1、2、3、4、……、n－1共n－1种取法，所以n个数的错排个数: An= (n-1)(A(n-1) + A(n-2));<br>实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">function error_combination($N = 3) &#123;</span><br><span class="line">    if ($N &lt;= 1) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if($N == 2) &#123;</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    $pre1 = 0;</span><br><span class="line">    $pre2 = 1;</span><br><span class="line">    for ($i = 3;$i&lt;= $N ;$i++) &#123;</span><br><span class="line">        $now = ($i-1)*($pre1 +$pre2);</span><br><span class="line">        $pre1 = $pre2;</span><br><span class="line">        $pre2 = $now;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return $now;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fibonacci 数列问题，关键在于找出递推公式，并且都可以使用递归放实现，但递归的空间复杂度都是O（n）,在实现的时候都可以优化成O(1).</p>
+</li>
+</ul>
+
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2019/09/13/pirate/" class="link f-fr">海盗分金⟶</a>
+    
+  </footer>
+</section></div>
+    <footer id="footer" class="f-cf">
+  友链
+  
+    
+      
+        · <a href="https://liangjun.work/" target="_blank" class="nav-icn">Wu</a>
+      
+    
+      
+        · <a href="https://xwine.github.io/" target="_blank" class="nav-icn">京东君</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @Flipped</span>
+</footer>
+  </div>
+</body>
+</html>
