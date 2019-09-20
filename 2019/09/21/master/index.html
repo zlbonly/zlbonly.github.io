@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>细说MYSQL主从复制(一) | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="基于Docker的Mysql主从复制搭建为什么基于Docker搭建？ 资源有限  一台机器上可以运行多个Docker容器  Docker容器之间相互独立，有独立ip，互不冲突 Docker使用步骤简便，启动容器在秒级别     1、利用Docker搭建主从服务器 首先拉取docker镜像,我们这里使用5.7版本的mysql： 1docker pull reg.zuinianqing.com/lib">
+<meta property="og:type" content="article">
+<meta property="og:title" content="细说MYSQL主从复制(一)">
+<meta property="og:url" content="http://yoursite.com/2019/09/21/master/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="基于Docker的Mysql主从复制搭建为什么基于Docker搭建？ 资源有限  一台机器上可以运行多个Docker容器  Docker容器之间相互独立，有独立ip，互不冲突 Docker使用步骤简便，启动容器在秒级别     1、利用Docker搭建主从服务器 首先拉取docker镜像,我们这里使用5.7版本的mysql： 1docker pull reg.zuinianqing.com/lib">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://seo-1255598498.file.myqcloud.com/full/4037c0125140641d65f7abea494ccc0968449728.jpg">
+<meta property="og:updated_time" content="2019-09-20T18:57:48.760Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="细说MYSQL主从复制(一)">
+<meta name="twitter:description" content="基于Docker的Mysql主从复制搭建为什么基于Docker搭建？ 资源有限  一台机器上可以运行多个Docker容器  Docker容器之间相互独立，有独立ip，互不冲突 Docker使用步骤简便，启动容器在秒级别     1、利用Docker搭建主从服务器 首先拉取docker镜像,我们这里使用5.7版本的mysql： 1docker pull reg.zuinianqing.com/lib">
+<meta name="twitter:image" content="http://seo-1255598498.file.myqcloud.com/full/4037c0125140641d65f7abea494ccc0968449728.jpg">
+  
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+</html>
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">Flipped</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            · <a href="https://blog.csdn.net/zlb_lover" target="_blank" class="nav-icn">CSDN</a>
+          
+        
+          
+            · <a href="https://github.com/zlbonly" target="_blank" class="nav-icn">GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">HOME</a>
+          
+        
+            <a href="/archives" class="nav-menu ">ARCHIVE</a>
+          
+        
+            <a href="/about" class="nav-menu ">ABOUT</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">细说MYSQL主从复制(一)</h2>
+  <p class="sub">Sep 21, 2019</p>
+  <article class="content">
+    <h3 id="基于Docker的Mysql主从复制搭建"><a href="#基于Docker的Mysql主从复制搭建" class="headerlink" title="基于Docker的Mysql主从复制搭建"></a>基于Docker的Mysql主从复制搭建</h3><h4 id="为什么基于Docker搭建？"><a href="#为什么基于Docker搭建？" class="headerlink" title="为什么基于Docker搭建？"></a>为什么基于Docker搭建？</h4><ul>
+<li>资源有限 </li>
+<li>一台机器上可以运行多个Docker容器 </li>
+<li>Docker容器之间相互独立，有独立ip，互不冲突</li>
+<li>Docker使用步骤简便，启动容器在秒级别   </li>
+</ul>
+<h4 id="1、利用Docker搭建主从服务器"><a href="#1、利用Docker搭建主从服务器" class="headerlink" title="1、利用Docker搭建主从服务器"></a>1、利用Docker搭建主从服务器</h4><ul>
+<li><p>首先拉取docker镜像,我们这里使用5.7版本的mysql：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull reg.zuinianqing.com/library/dockerui:1.17</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后使用此镜像启动容器（因为我是两台mac，因此使用的是同一个命令）  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run  -p 3306:3306 --name mysql -itd --net mynetwork --ip 10.18.3.5 reg.zuinianqing.com/library/mysql:5.7 &amp;&amp; docker restart mysql</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="2、配置主Master"><a href="#2、配置主Master" class="headerlink" title="2、配置主Master"></a>2、配置主Master</h4><p>通过docker exec -it 627a2368c865 /bin/bash命令进入到Master容器内部，也可以通过docker exec -it mysql /bin/bash命令进入。627a2368c865是容器的id,而mysql-master是容器的名称。<br>cd /etc/mysql切换到/etc/mysql目录下，然后vi my.cnf对my.cnf进行编辑  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">log-bin=mysql-bin</span><br><span class="line">server-id=1</span><br></pre></td></tr></table></figure>
+
+<p>配置完成后重启mysql</p>
+<h4 id="3、配置Slave"><a href="#3、配置Slave" class="headerlink" title="3、配置Slave"></a>3、配置Slave</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server-id=101</span><br><span class="line">log-bin=mysql-slave-bin</span><br><span class="line">relay_log=edu-mysql-relay-bin</span><br></pre></td></tr></table></figure>
+
+<p>配置完成后重启mysql</p>
+<h4 id="4、在主服务器上建立帐户并授权slave"><a href="#4、在主服务器上建立帐户并授权slave" class="headerlink" title="4、在主服务器上建立帐户并授权slave:"></a>4、在主服务器上建立帐户并授权slave:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GRANT REPLICATION SLAVE,FILE ON *.* TO &apos;mysync&apos;@&apos;192.168.2.100&apos; IDENTIFIED BY &apos;q123456&apos;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5、登录主服务器的mysql，查询master的状态"><a href="#5、登录主服务器的mysql，查询master的状态" class="headerlink" title="5、登录主服务器的mysql，查询master的状态"></a>5、登录主服务器的mysql，查询master的状态</h4><p><img src="../../../../../images/master2.png" alt></p>
+<h4 id="6、配置从服务器Slave："><a href="#6、配置从服务器Slave：" class="headerlink" title="6、配置从服务器Slave："></a>6、配置从服务器Slave：</h4> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.2.100&apos;,master_user=&apos;mysync&apos;,master_password=&apos;q123456&apos;,master_log_file=&apos;mysql-bin.000008&apos;,master_log_pos=154,master_port=3306;</span><br></pre></td></tr></table></figure>
+
+<h4 id="7、检查从服务器复制功能状态："><a href="#7、检查从服务器复制功能状态：" class="headerlink" title="7、检查从服务器复制功能状态："></a>7、检查从服务器复制功能状态：</h4><p><img src="../../../../../images/salve.jpg" alt></p>
+<h4 id="碰到问题"><a href="#碰到问题" class="headerlink" title="碰到问题"></a>碰到问题</h4><p> 在配置主从复制模式的时候发现配置失败<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G;</span><br><span class="line">Last_IO_Error: Fatal error: The slave I/O thread stops because master and slave have equal MySQL server UUIDs; these UUIDs must be different for replication to work</span><br></pre></td></tr></table></figure></p>
+<h4 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h4><p>问题提示主从使用了相同的server UUID，一个个的检查：</p>
+<ul>
+<li><p>检查主从server_id  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">主库：</span><br><span class="line">mysql&gt;  show variables like &apos;server_id&apos;;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| server_id     | 1     |</span><br><span class="line">+---------------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">从库：</span><br><span class="line">mysql&gt;  show variables like &apos;server_id&apos;;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| server_id     | 2     |</span><br><span class="line">+---------------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>server_id不一样，排除。检查主从状态： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">主库：</span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| mysql-bin.000008 |      154 |              |                  |                   |</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">从库：</span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| mysql-bin.000001 |      306 |              |                  |                   |</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>File一样，排除。</p>
+<ul>
+<li>最后检查发现他们的auto.cnf中的server-uuid是一样的。。。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# vim /var/lib/mysql/auto.cnf</span><br><span class="line"></span><br><span class="line">[auto]</span><br><span class="line">server-uuid=4f37a731-9b79-11e8-8013-000c29f0700f</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>问题解决<br>停止从库的mysqld服务，删除他的auto.cnf文件，再启动数据库服务即可(或者手动修改 从库的 uuid值)</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;以前总是太懒，不愿意专研，其实沉下心来，好好研究配置下，会发现并没有自己想像的那么难，而且还能加深理解。</p>
+
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2019/09/18/fibonacci/" class="link f-fr">动态规划 —— Fibonacci⟶</a>
+    
+  </footer>
+</section></div>
+    <footer id="footer" class="f-cf">
+  友链
+  
+    
+      
+        · <a href="https://liangjun.work/" target="_blank" class="nav-icn">Wu</a>
+      
+    
+      
+        · <a href="https://xwine.github.io/" target="_blank" class="nav-icn">京东君</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @Flipped</span>
+</footer>
+  </div>
+</body>
+</html>
