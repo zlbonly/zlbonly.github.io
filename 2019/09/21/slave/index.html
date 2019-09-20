@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>探索MYSQL主从复制原理 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MySQL 主从复制概念  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索MYSQL主从复制原理">
+<meta property="og:url" content="http://yoursite.com/2019/09/21/slave/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="MySQL 主从复制概念  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://seo-1255598498.file.myqcloud.com/full/4037c0125140641d65f7abea494ccc0968449728.jpg">
+<meta property="og:updated_time" content="2019-09-20T19:42:38.079Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="探索MYSQL主从复制原理">
+<meta name="twitter:description" content="MySQL 主从复制概念  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。">
+<meta name="twitter:image" content="http://seo-1255598498.file.myqcloud.com/full/4037c0125140641d65f7abea494ccc0968449728.jpg">
+  
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+</html>
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">Flipped</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            · <a href="https://blog.csdn.net/zlb_lover" target="_blank" class="nav-icn">CSDN</a>
+          
+        
+          
+            · <a href="https://github.com/zlbonly" target="_blank" class="nav-icn">GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">HOME</a>
+          
+        
+            <a href="/archives" class="nav-menu ">ARCHIVE</a>
+          
+        
+            <a href="/about" class="nav-menu ">ABOUT</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">探索MYSQL主从复制原理</h2>
+  <p class="sub">Sep 21, 2019</p>
+  <article class="content">
+    <h4 id="MySQL-主从复制概念"><a href="#MySQL-主从复制概念" class="headerlink" title="MySQL 主从复制概念"></a>MySQL 主从复制概念</h4><p>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。                                   </p>
+<h4 id="MySQL-主从复制主要用途"><a href="#MySQL-主从复制主要用途" class="headerlink" title="MySQL 主从复制主要用途"></a>MySQL 主从复制主要用途</h4><ul>
+<li><p>读写分离<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在开发工作中，有时候会遇见某个sql 语句需要锁表，导致暂时不能使用读的服务，这样就会影响现有业务，使用主从复制，让主库负责写，从库负责读，这样，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作</p>
+</li>
+<li><p>数据实时备份，当系统中某个节点发生故障时，可以方便的故障切换 </p>
+</li>
+<li><p>架构扩展<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;随着系统中业务访问量的增大，如果是单机部署数据库，就会导致I/O访问频率过高。有了主从复制，增加多个数据存储节点，将负载分布在多个从节点上，降低单机磁盘I/O访问的频率，提高单个机器的I/O性能。</p>
+</li>
+</ul>
+<h4 id="MySQL主从形式"><a href="#MySQL主从形式" class="headerlink" title="MySQL主从形式"></a>MySQL主从形式</h4><ul>
+<li><p>一主一从</p>
+</li>
+<li><p>一主多从<br><img src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=914542170,462716588&fm=173&app=49&f=JPEG?w=244&h=264&s=09235D32415355CC445DB0DF0200C0B2" alt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一主一从和一主多从是最常见的主从架构，实施起来简单并且有效，不仅可以实现HA，而且还能读写分离，进而提升集群的并发能力。</p>
+</li>
+<li><p>多主一从 （从5.7开始支持）<br><img src="https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=247173614,4106869889&fm=173&app=49&f=JPEG?w=216&h=188&s=09235D3001427D4D466C18DA0200C0B2" alt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;多主一从可以将多个mysql数据库备份到一台存储性能比较好的服务器上。</p>
+</li>
+<li><p>双主复制<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;双主复制，也就是互做主从复制，每个master既是master，又是另外一台服务器的slave。这样任何一方所做的变更，都会通过复制应用到另外一方的数据库中。</p>
+</li>
+<li><p>级联复制<br><img src="https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=3446109496,3435852387&fm=173&app=49&f=JPEG?w=302&h=106&s=89235D3285357823485D49DB020080B2" alt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级联复制模式下，部分slave的数据同步不连接主节点，而是连接从节点。因为如果主节点有太多的从节点，就会损耗一部分性能用于replication，那么我们可以让3~5个从节点连接主节点，其它从节点作为二级或者三级与从节点连接，这样不仅可以缓解主节点的压力，并且对数据一致性没有负面影响。 </p>
+</li>
+</ul>
+<h4 id="MySQL-主从复制原理"><a href="#MySQL-主从复制原理" class="headerlink" title="MySQL 主从复制原理"></a>MySQL 主从复制原理</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MySQL主从复制涉及到三个线程，一个运行在主节点（log dump thread），其余两个(I/O thread, SQL thread)运行在从节点，如下图所示:<br><img src="https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=3616190683,3608800796&fm=173&app=49&f=JPEG?w=640&h=251&s=01704730B3307423404091CA030070B3" alt></p>
+<ul>
+<li>主节点 binary log dump 线程<br>&nbsp;&nbsp;&nbsp;当从节点连接主节点时，主节点会创建一个log dump 线程，用于发送bin-log的内容。在读取bin-log中的操作时，此线程会对主节点上的bin-log加锁，当读取完成，甚至在发动给从节点之前，锁会被释放。</li>
+<li>从节点I/O线程<br>&nbsp;&nbsp;&nbsp;当从节点上执行<code>start slave</code>命令之后，从节点会创建一个I/O线程用来连接主节点，请求主库中更新的bin-log。I/O线程接收到主节点binlog dump 进程发来的更新之后，保存在本地relay-log中。</li>
+<li>从节点SQL线程<br>&nbsp;&nbsp;&nbsp;SQL线程负责读取relay log中的内容，解析成具体的操作并执行，最终保证主从数据的一致性。<br>&nbsp;&nbsp;&nbsp;对于每一个主从连接，都需要三个进程来完成。当主节点有多个从节点时，主节点会为每一个当前连接的从节点建一个binary log dump 进程，而每个从节点都有自己的I/O进程，SQL进程。从节点用两个线程将从主库拉取更新和执行分成独立的任务，这样在执行同步数据任务的时候，不会降低读操作的性能。比如，如果从节点没有运行，此时I/O进程可以很快从主节点获取更新，尽管SQL进程还没有执行。如果在SQL进程执行之前从节点服务停止，至少I/O进程已经从主节点拉取到了最新的变更并且保存在本地relay日志中，当服务再次起来之后，就可以完成数据的同步。</li>
+</ul>
+<p>要实施复制，<font color="red">首先必须打开Master 端的binary log（bin-log）功能，否则无法实现</font>。</p>
+<h4 id="MySQL-主从复制模式"><a href="#MySQL-主从复制模式" class="headerlink" title="MySQL 主从复制模式"></a>MySQL 主从复制模式</h4><p>MySQL 主从复制默认是异步的模式。MySQL增删改操作会全部记录在binary log中，当slave节点连接master时，会主动从master处获取最新的bin log文件。并把bin log中的sql relay</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mysql 主从复制是mysql 高可用，高性能的基础，有了这个基础，mysql 的部署会变得简单、灵活并且具有多样性，从而可以根据不同的业务场景做出灵活的调整。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a href="https://book.douban.com/subject/24708143/" target="_blank" rel="noopener">MySQL技术内幕</a>;</li>
+</ul>
+
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2019/09/21/master/" class="link f-fr">细说MYSQL主从复制(一)⟶</a>
+    
+  </footer>
+</section></div>
+    <footer id="footer" class="f-cf">
+  友链
+  
+    
+      
+        · <a href="https://liangjun.work/" target="_blank" class="nav-icn">Wu</a>
+      
+    
+      
+        · <a href="https://xwine.github.io/" target="_blank" class="nav-icn">京东君</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @Flipped</span>
+</footer>
+  </div>
+</body>
+</html>
