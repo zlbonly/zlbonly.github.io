@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>最小栈 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="题目 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。  push(x) – 将元素 x 推入栈中。 pop() – 删除栈顶的元素。 top() – 获取栈顶元素。 getMin() – 检索栈中的最小元素。示例：12345678MinStack minStack = new M">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最小栈">
+<meta property="og:url" content="http://yoursite.com/2019/09/24/min_stack/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="题目 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。  push(x) – 将元素 x 推入栈中。 pop() – 删除栈顶的元素。 top() – 获取栈顶元素。 getMin() – 检索栈中的最小元素。示例：12345678MinStack minStack = new M">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img3.doubanio.com/lpic/s29484334.jpg">
+<meta property="og:updated_time" content="2019-09-24T07:37:50.097Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最小栈">
+<meta name="twitter:description" content="题目 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。  push(x) – 将元素 x 推入栈中。 pop() – 删除栈顶的元素。 top() – 获取栈顶元素。 getMin() – 检索栈中的最小元素。示例：12345678MinStack minStack = new M">
+<meta name="twitter:image" content="https://img3.doubanio.com/lpic/s29484334.jpg">
+  
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+</html>
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">Flipped</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            · <a href="https://blog.csdn.net/zlb_lover" target="_blank" class="nav-icn">CSDN</a>
+          
+        
+          
+            · <a href="https://github.com/zlbonly" target="_blank" class="nav-icn">GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">HOME</a>
+          
+        
+            <a href="/archives" class="nav-menu ">ARCHIVE</a>
+          
+        
+            <a href="/about" class="nav-menu ">ABOUT</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">最小栈</h2>
+  <p class="sub">Sep 24, 2019</p>
+  <article class="content">
+    <h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。</p>
+<ul>
+<li>push(x) – 将元素 x 推入栈中。</li>
+<li>pop() – 删除栈顶的元素。</li>
+<li>top() – 获取栈顶元素。</li>
+<li>getMin() – 检索栈中的最小元素。<br>示例：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MinStack minStack = new MinStack();</span><br><span class="line">minStack.push(-2);</span><br><span class="line">minStack.push(0);</span><br><span class="line">minStack.push(-3);</span><br><span class="line">minStack.getMin();   --&gt; 返回 -3.</span><br><span class="line">minStack.pop();</span><br><span class="line">minStack.top();      --&gt; 返回 0.</span><br><span class="line">minStack.getMin();   --&gt; 返回 -2.</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<h3 id="题目限制条件"><a href="#题目限制条件" class="headerlink" title="题目限制条件"></a>题目限制条件</h3><ul>
+<li>1、实现栈数据结构</li>
+<li>2、获取最小元素功能的时间复杂度O(1)。</li>
+</ul>
+<h3 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h3><ul>
+<li>1、可以使用栈数据结构，实现其出栈，入栈，获取栈顶功能，但是仅仅用一个栈，无法实现获取最小元素功能</li>
+<li>2、时间复杂度和空间复杂度<br>  获取最小元素功能的时间复杂度O(1) 已是最优，因此可以考虑使用空间换取时间的策略。</li>
+</ul>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;基于上述两方面分析，结合元素进栈/出栈操作，这里我们尝试采用一个辅助栈(MinStack)配合原始栈(MainStack)实现算法需要的新特性。其时间复杂度为O(1)，空间复杂度为O(n)。一个元素压入原始栈时，条件性压入辅助栈（目的是保存当前原始栈中值最小的元素）；元素弹出原始栈时，同样需要条件性弹出辅助栈的栈顶元素（目的是确保辅助栈的栈顶元素是当前原始栈中值最小的元素）。<br> 简单说来，流程如下：</p>
+<ul>
+<li>元素进栈操作<br>1、辅助栈MinStack为空<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;元素首先压入原始栈MainStack，而后直接压入辅助栈MinStack。<br>2、辅助栈MinStack非空<br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;元素首先压入原始栈MainStack，而后判断该元素是否需要压入辅助栈MinStack。此时分以下两种情况：<br>   a. 新入栈元素大于等于辅助栈栈顶元素。该元素不会被压入辅助栈。<br>   b. 新入栈元素小于辅助栈栈顶元素。该元素需要被压入辅助栈。<br>&nbsp;&nbsp;&nbsp;&nbsp;此处有一个细节需要注意：入栈操作过程中及完成后，辅助栈中元素自底向上是一个递减序列。<br>&nbsp;&nbsp;&nbsp;&nbsp;具体分析请看下面图解(图片不再自己画图，引用网友)：<br>&nbsp;&nbsp;&nbsp;&nbsp;给定一个无序整数序列：  3, 8, 5, 6, 9, 1, 0, 2<br>(1) 元素3压入原始栈，此时辅助栈为空，故需要同时将其压入辅助栈。后续元素8, 5, 6, 9压入原始栈时，辅助栈不会有任何入栈操作。  </li>
+</ul>
+<p><img src="../../../../../images/salve.jpg" alt>     </p>
+<p> <img src="../../../../../images/stack1.png" alt> </p>
+<p>(2) 元素1压入原始栈，此时辅助栈非空。元素1小于辅助栈栈顶元素3，故元素1需要同时压入辅助栈。</p>
+<p><img src="../../../../../images/stack2.png" alt></p>
+<p>(3) 元素0压入原始栈，此时辅助栈亦非空。元素0小于辅助栈栈顶元素1，故元素0需要同时压入辅助栈。</p>
+<p><img src="../../../../../images/stack3.png" alt></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最后，尾元素2压入原始栈，因其大于辅助栈栈顶元素0，故无需压入辅助栈。至此算法的入栈操作完成。</p>
+<ul>
+<li>元素出栈操作<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 出栈操作相对简单：首先弹出原始栈的栈顶元素，当该栈顶元素等于辅助栈的栈顶元素时，弹出辅助栈的栈顶元素，以此来保证辅助栈的栈顶元素永远是原始栈当前元素中最小的元素。</li>
+</ul>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><ul>
+<li><p>Go 语言</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">type MinStack struct &#123;</span><br><span class="line">    elems []int</span><br><span class="line">    mins  []int</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Constructor() MinStack &#123;</span><br><span class="line">    return MinStack&#123;make([]int, 0), make([]int, 0)&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *MinStack) Push(x int)  &#123;</span><br><span class="line">    this.elems = append(this.elems,x);</span><br><span class="line">    if len(this.mins) == 0 || this.GetMin() &gt; x &#123;</span><br><span class="line">        this.mins = append(this.mins,x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *MinStack) Pop()  &#123;</span><br><span class="line">    elem := this.Top();</span><br><span class="line">    this.elems = this.elems[:len(this.elems) -1]</span><br><span class="line">    if elem == this.GetMin() &#123;</span><br><span class="line">         this.mins = this.mins[:len(this.mins)-1]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *MinStack) Top() int &#123;</span><br><span class="line">    if len(this.elems) == 0 &#123;</span><br><span class="line">        panic(&quot;empty stack&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    elem := this.elems[len(this.elems)-1]</span><br><span class="line">    return elem</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *MinStack) GetMin() int &#123;</span><br><span class="line">    if len(this.mins) == 0 &#123;</span><br><span class="line">        panic(&quot;empty stack&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    elem := this.mins[len(this.mins)-1]</span><br><span class="line">    return elem</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>PHP 代码实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">class MinStack &#123;</span><br><span class="line">    private $mainStack;</span><br><span class="line">    private $minStack;</span><br><span class="line">    function __construct() &#123;</span><br><span class="line">        $this-&gt;mainStack = array();</span><br><span class="line">        $this-&gt;minStack = array();</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    function push($x) &#123;</span><br><span class="line">        array_push($this-&gt;mainStack, $x);</span><br><span class="line">        if(empty($this-&gt;minStack) || (!empty($this-&gt;minStack)  &amp;&amp;  $x &lt; $this-&gt;minStack[count($this-&gt;minStack)-1])) &#123;</span><br><span class="line">            array_push($this-&gt;minStack,$x);</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    function pop() &#123;</span><br><span class="line">       $a =  array_pop($this-&gt;mainStack);</span><br><span class="line">        if($a == $this-&gt;minStack[count($this-&gt;minStack) -1] )&#123;</span><br><span class="line">            array_pop($this-&gt;minStack);</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    function top() &#123;</span><br><span class="line">        return $this-&gt;mainStack[count($this-&gt;mainStack )-1];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    function getMin() &#123;</span><br><span class="line">        return $this-&gt;minStack[count($this-&gt;minStack)-1];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不得不说，以前落下的太多了，成为技术大大的道路太艰难，但路漫漫而修远兮，吾将上下而求索。</p>
+</li>
+</ul>
+
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2019/09/21/slave/" class="link f-fr">探索MYSQL主从复制原理⟶</a>
+    
+  </footer>
+</section></div>
+    <footer id="footer" class="f-cf">
+  友链
+  
+    
+      
+        · <a href="https://liangjun.work/" target="_blank" class="nav-icn">Wu</a>
+      
+    
+      
+        · <a href="https://xwine.github.io/" target="_blank" class="nav-icn">京东君</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @Flipped</span>
+</footer>
+  </div>
+</body>
+</html>
