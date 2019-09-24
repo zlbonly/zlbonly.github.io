@@ -13,7 +13,7 @@
 <meta property="og:description" content="题目 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。  push(x) – 将元素 x 推入栈中。 pop() – 删除栈顶的元素。 top() – 获取栈顶元素。 getMin() – 检索栈中的最小元素。示例：12345678MinStack minStack = new M">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://img3.doubanio.com/lpic/s29484334.jpg">
-<meta property="og:updated_time" content="2019-09-24T07:37:50.097Z">
+<meta property="og:updated_time" content="2019-09-24T07:41:52.127Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="最小栈">
 <meta name="twitter:description" content="题目 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。  push(x) – 将元素 x 推入栈中。 pop() – 删除栈顶的元素。 top() – 获取栈顶元素。 getMin() – 检索栈中的最小元素。示例：12345678MinStack minStack = new M">
@@ -87,10 +87,8 @@
 </ul>
 <h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;基于上述两方面分析，结合元素进栈/出栈操作，这里我们尝试采用一个辅助栈(MinStack)配合原始栈(MainStack)实现算法需要的新特性。其时间复杂度为O(1)，空间复杂度为O(n)。一个元素压入原始栈时，条件性压入辅助栈（目的是保存当前原始栈中值最小的元素）；元素弹出原始栈时，同样需要条件性弹出辅助栈的栈顶元素（目的是确保辅助栈的栈顶元素是当前原始栈中值最小的元素）。<br> 简单说来，流程如下：</p>
 <ul>
-<li>元素进栈操作<br>1、辅助栈MinStack为空<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;元素首先压入原始栈MainStack，而后直接压入辅助栈MinStack。<br>2、辅助栈MinStack非空<br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;元素首先压入原始栈MainStack，而后判断该元素是否需要压入辅助栈MinStack。此时分以下两种情况：<br>   a. 新入栈元素大于等于辅助栈栈顶元素。该元素不会被压入辅助栈。<br>   b. 新入栈元素小于辅助栈栈顶元素。该元素需要被压入辅助栈。<br>&nbsp;&nbsp;&nbsp;&nbsp;此处有一个细节需要注意：入栈操作过程中及完成后，辅助栈中元素自底向上是一个递减序列。<br>&nbsp;&nbsp;&nbsp;&nbsp;具体分析请看下面图解(图片不再自己画图，引用网友)：<br>&nbsp;&nbsp;&nbsp;&nbsp;给定一个无序整数序列：  3, 8, 5, 6, 9, 1, 0, 2<br>(1) 元素3压入原始栈，此时辅助栈为空，故需要同时将其压入辅助栈。后续元素8, 5, 6, 9压入原始栈时，辅助栈不会有任何入栈操作。  </li>
+<li>元素进栈操作<br>1、辅助栈MinStack为空<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;元素首先压入原始栈MainStack，而后直接压入辅助栈MinStack。<br>2、辅助栈MinStack非空<br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;元素首先压入原始栈MainStack，而后判断该元素是否需要压入辅助栈MinStack。此时分以下两种情况：<br>   a. 新入栈元素大于等于辅助栈栈顶元素。该元素不会被压入辅助栈。<br>   b. 新入栈元素小于辅助栈栈顶元素。该元素需要被压入辅助栈。<br>&nbsp;&nbsp;此处有一个细节需要注意：入栈操作过程中及完成后，辅助栈中元素自底向上是一个递减序列。<br>具体分析请看下面图解(图片不再自己画图，引用网友)：<br>给定一个无序整数序列：  3, 8, 5, 6, 9, 1, 0, 2<br>(1) 元素3压入原始栈，此时辅助栈为空，故需要同时将其压入辅助栈。后续元素8, 5, 6, 9压入原始栈时，辅助栈不会有任何入栈操作。<br><img src="../../../../../images/stack1.png" alt> </li>
 </ul>
-<p><img src="../../../../../images/salve.jpg" alt>     </p>
-<p> <img src="../../../../../images/stack1.png" alt> </p>
 <p>(2) 元素1压入原始栈，此时辅助栈非空。元素1小于辅助栈栈顶元素3，故元素1需要同时压入辅助栈。</p>
 <p><img src="../../../../../images/stack2.png" alt></p>
 <p>(3) 元素0压入原始栈，此时辅助栈亦非空。元素0小于辅助栈栈顶元素1，故元素0需要同时压入辅助栈。</p>
